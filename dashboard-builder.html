@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Dashboard Builder — Run AI Free and Offline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --card: #111118;
+    --border: #222230;
+    --neon: #00ff88;
+    --purple: #a855f7;
+    --orange: #ff6b2b;
+    --white: #f0f0ff;
+    --gray: #666680;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* animated bg grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--neon);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 8vw, 56px);
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  h1 span { color: var(--neon); }
+
+  .sub {
+    color: var(--gray);
+    font-size: 13px;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--neon);
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .step.active { border-left-color: var(--orange); }
+  .step.done { border-left-color: var(--purple); opacity: 0.7; }
+
+  .step-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--neon);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .step.active .step-label { color: var(--orange); }
+  .step.done .step-label { color: var(--purple); }
+
+  .step h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    background: #0d0d15;
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--neon);
+  }
+
+  select option { background: #0d0d15; }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    background: var(--neon);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 16px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 24px;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn.secondary {
+    background: transparent;
+    color: var(--neon);
+    border: 1px solid var(--neon);
+    margin-top: 10px;
+  }
+
+  #output-section {
+    display: none;
+    margin-top: 32px;
+  }
+
+  .output-box {
+    background: #0d0d15;
+    border: 1px solid var(--neon);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .output-box h4 {
+    font-family: 'Syne', sans-serif;
+    color: var(--neon);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .output-box pre {
+    font-size: 11px;
+    line-height: 1.7;
+    color: #aaa;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .copy-btn {
+    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--gray);
+    color: var(--gray);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .copy-btn:hover { border-color: var(--neon); color: var(--neon); }
+
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 30px;
+    color: var(--neon);
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  .loading::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--border);
+    border-top-color: var(--neon);
+    border-radius: 50%;
+    margin: 16px auto 0;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .tag {
+    display: inline-block;
+    background: rgba(168,85,247,0.15);
+    border: 1px solid var(--purple);
+    color: var(--purple);
+    font-size: 10px;
+    padding: 2px 8px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .footer {
+    text-align: center;
+    color: var(--gray);
+    font-size: 11px;
+    margin-top: 60px;
+    letter-spacing: 1px;
+  }
+
+  .footer a { color: var(--neon); text-decoration: none; }
+
+  .error {
+    background: rgba(255,100,100,0.1);
+    border: 1px solid rgba(255,100,100,0.3);
+    color: #ff8888;
+    padding: 12px;
+    font-size: 12px;
+    margin-top: 12px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="badge">Run AI Free and Offline</div>
+  <h1>Free Dashboard<br><span>Builder</span></h1>
+  <p class="sub">Answer 4 questions. Get a real dashboard. Free forever.<br>No subscription. No API key. Powered by Groq (free tier).</p>
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <div class="step-label">Step 01</div>
+    <h3>Your Groq API Key</h3>
+    <label>Paste your free Groq key (groq.com → free account)</label>
+    <input type="password" id="groq-key" placeholder="gsk_..." />
+    <p style="font-size:11px;color:var(--gray);margin-top:8px;">Your key stays in your browser. Never sent anywhere except Groq.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 02</div>
+    <h3>About Your Business</h3>
+    <label>What do you sell or do?</label>
+    <input type="text" id="biz-what" placeholder="e.g. I sell handmade candles online" />
+    <label>Who is your customer?</label>
+    <input type="text" id="biz-who" placeholder="e.g. women 25-45 who love home decor" />
+    <label>What's your #1 goal right now?</label>
+    <select id="biz-goal">
+      <option value="">Pick one</option>
+      <option value="get more customers">Get more customers</option>
+      <option value="make more sales">Make more sales</option>
+      <option value="save time on marketing">Save time on marketing</option>
+      <option value="build my brand online">Build my brand online</option>
+      <option value="launch a new product">Launch a new product</option>
+    </select>
+    <label>What platforms do you use?</label>
+    <input type="text" id="biz-platforms" placeholder="e.g. Instagram, Etsy, TikTok" />
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 03</div>
+    <h3>Dashboard Style</h3>
+    <label>Pick your vibe</label>
+    <select id="dash-style">
+      <option value="">Pick one</option>
+      <option value="dark neon minimal">Dark + Neon (like this page)</option>
+      <option value="clean white professional">Clean White + Professional</option>
+      <option value="bold colorful energetic">Bold + Colorful + Energetic</option>
+      <option value="soft pastel feminine">Soft Pastel + Feminine</option>
+      <option value="black gold luxury">Black + Gold + Luxury</option>
+    </select>
+  </div>
+
+  <button class="btn" onclick="buildDashboard()">BUILD MY FREE DASHBOARD →</button>
+
+  <div class="loading" id="loading">BUILDING YOUR DASHBOARD...</div>
+  <div class="error" id="error"></div>
+
+  <!-- OUTPUT -->
+  <div id="output-section">
+    <div class="output-box">
+      <h4>✓ Your Dashboard Is Ready</h4>
+      <div id="output-tags"></div>
+      <pre id="output-preview"></pre>
+      <button class="copy-btn" onclick="copyCode()">COPY FULL CODE</button>
+    </div>
+
+    <div class="output-box">
+      <h4>How To Make It Live (Free)</h4>
+      <pre>1. Go to github.com → create free account
+2. New repo → name it "my-dashboard"
+3. Settings → Pages → Deploy from main
+4. Create index.html → paste your code
+5. Your dashboard is live at:
+   yourusername.github.io/my-dashboard
+
+Done. Free forever.</pre>
+    </div>
+
+    <button class="btn secondary" onclick="resetForm()">BUILD ANOTHER ONE</button>
+  </div>
+
+  <div class="footer">
+    <p>Built inside <a href="https://www.skool.com/build-a-bot-workshop-3447" target="_blank">Run AI Free and Offline</a> on Skool</p>
+    <p style="margin-top:6px;">$17/month · Learn to build tools like this</p>
+  </div>
+
+</div>
+
+<script>
+let generatedCode = '';
+
+function setStepState() {
+  const key = document.getElementById('groq-key').value.trim();
+  const what = document.getElementById('biz-what').value.trim();
+  const who = document.getElementById('biz-who').value.trim();
+  const goal = document.getElementById('biz-goal').value;
+  const platforms = document.getElementById('biz-platforms').value.trim();
+  const style = document.getElementById('dash-style').value;
+
+  const s2 = document.getElementById('step2');
+  const s3 = document.getElementById('step3');
+
+  if (key) { s2.className = 'step active'; } else { s2.className = 'step'; }
+  if (key && what && who && goal && platforms) { s3.className = 'step active'; } else { s3.className = 'step'; }
+}
+
+document.querySelectorAll('input, select, textarea').forEach(el => {
+  el.addEventListener('input', setStepState);
+  el.addEventListener('change', setStepState);
+});
+
+async function buildDashboard() {
+  const key = document.getElementById('groq-key').value.trim();
+  const what = document.getElementById('biz-what').value.trim();
+  const who = document.getElementById('biz-who').value.trim();
+  const goal = document.getElementById('biz-goal').value;
+  const platforms = document.getElementById('biz-platforms').value.trim();
+  const style = document.getElementById('dash-style').value;
+  const errEl = document.getElementById('error');
+
+  errEl.style.display = 'none';
+
+  if (!key) { showError('Paste your free Groq API key first. Get one at groq.com — it takes 2 minutes.'); return; }
+  if (!what || !who || !goal) { showError('Fill out your business info first.'); return; }
+  if (!style) { showError('Pick a dashboard style.'); return; }
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('output-section').style.display = 'none';
+  document.querySelector('.btn').disabled = true;
+
+  const prompt = `You are an expert web developer. Build a complete, beautiful, single-file HTML dashboard for this business:
+
+Business: ${what}
+Customer: ${who}
+Goal: ${goal}
+Platforms: ${platforms}
+Visual style: ${style}
+
+The dashboard must include:
+- A header with the business name and tagline
+- A "Today's Focus" section with 3 specific action items based on their goal
+- A "Content Ideas" section with 5 ready-to-post content ideas for their platforms
+- A "Weekly Tracker" section with a simple checklist
+- A "Quick Wins" section with 3 things they can do today to move toward their goal
+- Footer with motivation
+
+Style requirements: ${style} aesthetic. Make it look professional and impressive.
+
+IMPORTANT: Return ONLY the complete HTML code. No explanation. No markdown. No backticks. Just the raw HTML starting with <!DOCTYPE html>`;
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${key}`
+      },
+      body: JSON.stringify({
+        model: 'llama3-8b-8192',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 4000,
+        temperature: 0.7
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showError('Groq error: ' + (data.error?.message || 'Check your API key'));
+      return;
+    }
+
+    let code = data.choices[0].message.content.trim();
+    code = code.replace(/```html/gi, '').replace(/```/g, '').trim();
+    generatedCode = code;
+
+    document.getElementById('output-tags').innerHTML = 
+      `<span class="tag">${style}</span><span class="tag">${goal}</span><span class="tag">${platforms.split(',')[0].trim()}</span>`;
+    
+    document.getElementById('output-preview').textContent = code.substring(0, 300) + '...\n\n[Click COPY FULL CODE to get everything]';
+    document.getElementById('output-section').style.display = 'block';
+
+    document.getElementById('step1').className = 'step done';
+    document.getElementById('step2').className = 'step done';
+    document.getElementById('step3').className = 'step done';
+
+  } catch (err) {
+    showError('Something went wrong: ' + err.message);
+  } finally {
+    document.getElementById('loading').style.display = 'none';
+    document.querySelector('.btn').disabled = false;
+  }
+}
+
+function showError(msg) {
+  const errEl = document.getElementById('error');
+  errEl.textContent = msg;
+  errEl.style.display = 'block';
+  document.getElementById('loading').style.display = 'none';
+  document.querySelector('.btn').disabled = false;
+}
+
+function copyCode() {
+  if (!generatedCode) return;
+  navigator.clipboard.writeText(generatedCode).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ COPIED';
+    setTimeout(() => { btn.textContent = 'COPY FULL CODE'; }, 2000);
+  });
+}
+
+function resetForm() {
+  document.getElementById('output-section').style.display = 'none';
+  document.getElementById('biz-what').value = '';
+  document.getElementById('biz-who').value = '';
+  document.getElementById('biz-goal').value = '';
+  document.getElementById('biz-platforms').value = '';
+  document.getElementById('dash-style').value = '';
+  document.getElementById('step1').className = 'step active';
+  document.getElementById('step2').className = 'step';
+  document.getElementById('step3').className = 'step';
+  generatedCode = '';
+}
+</script>
+</body>
+</html>
