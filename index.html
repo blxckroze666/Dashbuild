@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Free Dashboard Builder — Run AI Free and Offline</title>
+<title>Free Dashboard Builder -- Run AI Free and Offline</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -59,12 +59,12 @@ iframe{width:100%;height:600px;border:none;background:#fff;}
 <div class="wrap">
 <div class="badge">Run AI Free and Offline</div>
 <h1>Free Dashboard<br><span>Builder</span></h1>
-<p class="sub">Pick your dashboard type. Answer a few questions. Get a real working app — free forever on GitHub Pages.</p>
+<p class="sub">Pick your dashboard type. Answer a few questions. Get a real working app -- free forever on GitHub Pages.</p>
 
 <div class="card">
   <div class="card-label">Step 01</div>
   <h3>Your Free Groq Key</h3>
-  <label>Get free at groq.com — 2 min setup</label>
+  <label>Get free at groq.com -- 2 min setup</label>
   <input type="password" id="groq-key" placeholder="gsk_..."/>
   <p style="font-size:10px;color:#444;margin-top:6px;">Stays in your browser only. Never stored.</p>
 </div>
@@ -119,7 +119,7 @@ iframe{width:100%;height:600px;border:none;background:#fff;}
     <div class="gh-step"><div class="gh-num">2</div><div class="gh-text">Click <strong>New Repository</strong>. Name it anything (e.g. my-dashboard). Set it to Public. Click Create.</div></div>
     <div class="gh-step"><div class="gh-num">3</div><div class="gh-text">Click <strong>Add file → Upload files</strong>. Upload your downloaded dashboard HTML file. Rename it <strong>index.html</strong> before uploading.</div></div>
     <div class="gh-step"><div class="gh-num">4</div><div class="gh-text">Go to <strong>Settings → Pages</strong>. Under Source select <strong>Deploy from a branch</strong>. Pick <strong>main</strong> branch. Click Save.</div></div>
-    <div class="gh-step"><div class="gh-num">5</div><div class="gh-text">Wait 2 minutes. Your dashboard is live at: <strong>yourusername.github.io/my-dashboard</strong> — free forever.</div></div>
+    <div class="gh-step"><div class="gh-num">5</div><div class="gh-text">Wait 2 minutes. Your dashboard is live at: <strong>yourusername.github.io/my-dashboard</strong> -- free forever.</div></div>
   </div>
   <div class="preview-wrap">
     <div class="preview-label">Live Preview</div>
@@ -143,56 +143,56 @@ const STYLES = {
 };
 
 const TYPE_FIELDS = {
-  family:{label:'Step 03 — Your Family',fields:[
+  family:{label:'Step 03 -- Your Family',fields:[
     {id:'f-name',label:'Family name',type:'input',placeholder:'e.g. The Johnson Family'},
     {id:'f-members',label:'Family members and ages',type:'input',placeholder:'e.g. Mom, Dad, Emma 8, Jake 12'},
     {id:'f-chores',label:'Main chores to track',type:'textarea',placeholder:'e.g. Dishes, Vacuuming, Trash, Homework'},
     {id:'f-reward',label:'Reward system (optional)',type:'input',placeholder:'e.g. 10 points = $1 allowance'}
   ]},
-  project:{label:'Step 03 — Your Project',fields:[
+  project:{label:'Step 03 -- Your Project',fields:[
     {id:'p-name',label:'Project or board name',type:'input',placeholder:'e.g. Launch My Online Store'},
     {id:'p-goal',label:'Main goal',type:'input',placeholder:'e.g. Launch by December'},
     {id:'p-tasks',label:'Main tasks or categories',type:'textarea',placeholder:'e.g. Design, Marketing, Build website, Content'},
     {id:'p-team',label:'Team members (optional)',type:'input',placeholder:'e.g. Just me, or: Me, Sarah, Mike'}
   ]},
-  gaming:{label:'Step 03 — Your Gaming Setup',fields:[
+  gaming:{label:'Step 03 -- Your Gaming Setup',fields:[
     {id:'g-name',label:'Gamer name or team',type:'input',placeholder:'e.g. DarkBlaze or Team Nexus'},
     {id:'g-games',label:'Games you play',type:'input',placeholder:'e.g. Fortnite, Minecraft, FIFA'},
     {id:'g-track',label:'What to track',type:'textarea',placeholder:'e.g. Win/loss, KD ratio, Hours played, Achievements'},
     {id:'g-goal',label:'Your gaming goal',type:'input',placeholder:'e.g. Hit Diamond rank, Reach 1000 wins'}
   ]},
-  business:{label:'Step 03 — Your Business',fields:[
+  business:{label:'Step 03 -- Your Business',fields:[
     {id:'b-name',label:'Business name',type:'input',placeholder:'e.g. Glow Candles Co'},
     {id:'b-what',label:'What you sell',type:'input',placeholder:'e.g. Handmade candles'},
     {id:'b-goal',label:'Monthly revenue goal',type:'input',placeholder:'e.g. $2,000/month'},
     {id:'b-platforms',label:'Platforms you sell on',type:'input',placeholder:'e.g. Etsy, Instagram, TikTok'}
   ]},
-  fitness:{label:'Step 03 — Your Fitness',fields:[
+  fitness:{label:'Step 03 -- Your Fitness',fields:[
     {id:'fit-name',label:'Your name',type:'input',placeholder:'e.g. Tia'},
     {id:'fit-goal',label:'Fitness goal',type:'input',placeholder:'e.g. Lose 20 lbs, Run 5K, Build muscle'},
     {id:'fit-workouts',label:'Workouts you do',type:'textarea',placeholder:'e.g. Running, Weight training, Yoga, HIIT'},
     {id:'fit-days',label:'Days per week to train',type:'input',placeholder:'e.g. 4 days a week'}
   ]},
-  student:{label:'Step 03 — Your Studies',fields:[
+  student:{label:'Step 03 -- Your Studies',fields:[
     {id:'s-name',label:'Your name',type:'input',placeholder:'e.g. Jordan'},
     {id:'s-school',label:'School or program',type:'input',placeholder:'e.g. Community College, Online Bootcamp'},
     {id:'s-classes',label:'Classes or subjects',type:'textarea',placeholder:'e.g. Math, English, Web Design, History'},
     {id:'s-goal',label:'Academic goal',type:'input',placeholder:'e.g. Get straight As, Graduate by May'}
   ]},
-  content:{label:'Step 03 — Your Content',fields:[
+  content:{label:'Step 03 -- Your Content',fields:[
     {id:'c-name',label:'Brand or channel name',type:'input',placeholder:'e.g. TechWithTia'},
     {id:'c-niche',label:'Your niche or topic',type:'input',placeholder:'e.g. Free AI tools for beginners'},
     {id:'c-platforms',label:'Platforms you post on',type:'input',placeholder:'e.g. YouTube, TikTok, Instagram'},
     {id:'c-goal',label:'Content goal',type:'input',placeholder:'e.g. 10K followers, Monetize channel'}
   ]},
-  adhd:{label:'Step 03 — Your ADHD Command Center',fields:[
+  adhd:{label:'Step 03 -- Your ADHD Command Center',fields:[
     {id:'a-name',label:'Dashboard name',type:'input',placeholder:'e.g. My Brain HQ'},
     {id:'a-goals',label:'Main goals right now',type:'textarea',placeholder:'e.g. Launch my Skool community, Finish my course, Make $1K this month'},
     {id:'a-challenges',label:'Biggest daily challenges',type:'textarea',placeholder:'e.g. Starting tasks, Staying focused, Forgetting things'},
     {id:'a-tasks',label:'Tasks you need to track daily',type:'textarea',placeholder:'e.g. Post on social, Reply to DMs, Work on course, Exercise'},
     {id:'a-notes',label:'Anything else to include',type:'input',placeholder:'e.g. Medication reminders, dopamine breaks, body doubling'}
   ]},
-  custom:{label:'Step 03 — Your Custom Dashboard',fields:[
+  custom:{label:'Step 03 -- Your Custom Dashboard',fields:[
     {id:'cu-name',label:'Dashboard name',type:'input',placeholder:'e.g. My Daily Command Center'},
     {id:'cu-purpose',label:'What is this dashboard for?',type:'textarea',placeholder:'Describe exactly what you want to track and manage'},
     {id:'cu-features',label:'Features you need',type:'textarea',placeholder:'e.g. Task list, progress tracker, notes, reminders'},
@@ -278,6 +278,7 @@ async function buildDashboard() {
   const s = STYLES[styleKey];
   const dashName = getDashboardName();
 
+  const safePrompt = (str) => str.split('').filter(c => c.charCodeAt(0) <= 127).join('');
   const prompt = `You are an expert frontend developer. Build a complete, polished, single-file HTML dashboard app.
 
 Dashboard type: ${selectedType}
@@ -334,12 +335,12 @@ Each item needs a working copy button using:
 onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)})"
 
 5. STYLE REQUIREMENTS
-- Use ONLY the colors provided above — no other colors
+- Use ONLY the colors provided above -- no other colors
 - Mobile first, max-width 100vw, all sections stack vertically
 - Cards with subtle borders and consistent padding (16px)
-- Font: system-ui or sans-serif — no external fonts
+- Font: system-ui or sans-serif -- no external fonts
 - Tab bar scrolls horizontally on mobile without scrollbar showing
-- Smooth tab switching — hide/show panels with display:block/none
+- Smooth tab switching -- hide/show panels with display:block/none
 - Buttons styled consistently with accent color
 - Input fields match the card background with accent border on focus
 - Looks professional enough to charge $50-$200 for
@@ -359,7 +360,7 @@ CRITICAL RULES:
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],max_tokens:8000,temperature:0.7}),
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:safePrompt(prompt)}],max_tokens:8000,temperature:0.7}),
       signal: controller.signal
     });
     clearTimeout(timeout);
@@ -377,7 +378,7 @@ CRITICAL RULES:
     const validation = validateHTML(raw);
     if(!validation.valid) {showErr(validation.reason); return;}
     generatedHTML = raw;
-    document.getElementById('out-title').textContent = dashName + ' — Ready!';
+    document.getElementById('out-title').textContent = dashName + ' -- Ready!';
     document.getElementById('preview-frame').srcdoc = raw;
     document.getElementById('output').style.display = 'block';
     document.getElementById('output').scrollIntoView({behavior:'smooth'});
