@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Dashboard Builder</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0f;color:#f0f0ff;font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* SETUP SCREEN */
+#setup{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;}
+.setup-logo{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:3px;color:#00ff88;text-transform:uppercase;margin-bottom:24px;}
+.setup-title{font-family:'Syne',sans-serif;font-size:clamp(28px,6vw,48px);font-weight:800;line-height:1.1;margin-bottom:12px;}
+.setup-title span{color:#00ff88;}
+.setup-sub{color:#666680;font-size:13px;line-height:1.7;max-width:420px;margin-bottom:32px;}
+.setup-card{background:#111118;border:1px solid #222230;border-left:3px solid #00ff88;padding:24px;width:100%;max-width:440px;text-align:left;margin-bottom:12px;}
+.setup-card label{display:block;font-size:10px;letter-spacing:2px;color:#00ff88;text-transform:uppercase;margin-bottom:8px;}
+.setup-card input{width:100%;background:#0d0d15;border:1px solid #222230;color:#f0f0ff;font-family:'Inter',monospace;font-size:13px;padding:12px;outline:none;border-radius:0;-webkit-appearance:none;transition:border-color 0.2s;}
+.setup-card input:focus{border-color:#00ff88;}
+.key-status{font-size:11px;margin-top:8px;min-height:16px;}
+.setup-btn{width:100%;max-width:440px;background:#00ff88;color:#000;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;padding:16px;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:2px;margin-top:4px;transition:opacity 0.2s;}
+.setup-btn:hover{opacity:0.9;}
+.setup-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.setup-note{font-size:11px;color:#333350;margin-top:16px;line-height:1.7;}
+.setup-note a{color:#00ff88;text-decoration:none;}
+
+/* BUILDER SCREEN */
+#builder{display:none;height:100vh;flex-direction:column;}
+
+/* TOP BAR */
+.topbar{background:#111118;border-bottom:1px solid #222230;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-brand{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#00ff88;letter-spacing:1px;}
+.topbar-actions{display:flex;gap:8px;}
+.topbar-btn{background:transparent;border:1px solid #222230;color:#666680;font-size:11px;padding:6px 12px;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;}
+.topbar-btn:hover{border-color:#00ff88;color:#00ff88;}
+.topbar-btn.danger:hover{border-color:#ff4444;color:#ff4444;}
+
+/* MAIN LAYOUT */
+.builder-body{display:flex;flex:1;overflow:hidden;}
+
+/* CHAT PANEL */
+.chat-panel{width:340px;flex-shrink:0;background:#0d0d15;border-right:1px solid #222230;display:flex;flex-direction:column;}
+.chat-header{padding:14px 16px;border-bottom:1px solid #222230;display:flex;align-items:center;gap:10px;}
+.chat-dot{width:8px;height:8px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.chat-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#f0f0ff;}
+.chat-sub{font-size:10px;color:#666680;margin-left:auto;}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.chat-messages::-webkit-scrollbar{width:4px;}
+.chat-messages::-webkit-scrollbar-track{background:transparent;}
+.chat-messages::-webkit-scrollbar-thumb{background:#222230;border-radius:2px;}
+.msg{max-width:88%;line-height:1.6;font-size:13px;padding:10px 14px;border-radius:4px;}
+.msg.ai{align-self:flex-start;background:#111118;color:#f0f0ff;border-left:3px solid #00ff88;}
+.msg.user{align-self:flex-end;background:#1a3a2a;color:#f0f0ff;}
+.msg.system{align-self:center;background:transparent;color:#333350;font-size:11px;text-align:center;border:none;padding:4px;}
+.typing{align-self:flex-start;background:#111118;border-left:3px solid #00ff88;padding:12px 16px;border-radius:4px;}
+.typing span{display:inline-block;width:6px;height:6px;background:#00ff88;border-radius:50%;margin:0 2px;animation:bounce 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:0.2s;}
+.typing span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+.chat-input-area{padding:12px;border-top:1px solid #222230;}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;background:#111118;border:1px solid #222230;color:#f0f0ff;font-family:'Inter',sans-serif;font-size:13px;padding:10px 12px;outline:none;border-radius:0;resize:none;max-height:100px;min-height:40px;-webkit-appearance:none;}
+.chat-input:focus{border-color:#00ff88;}
+.send-btn{background:#00ff88;color:#000;border:none;width:40px;height:40px;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity 0.2s;}
+.send-btn:hover{opacity:0.8;}
+.send-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.mic-btn{background:#111118;border:1px solid #222230;color:#666680;width:40px;height:40px;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.mic-btn:hover{border-color:#00ff88;color:#00ff88;}
+.mic-btn.listening{background:#ff4444;border-color:#ff4444;color:#fff;animation:micpulse 1s infinite;}
+@keyframes micpulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.quick-prompts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.qp-btn{background:transparent;border:1px solid #222230;color:#666680;font-size:10px;padding:4px 10px;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.5px;transition:all 0.2s;white-space:nowrap;}
+.qp-btn:hover{border-color:#00ff88;color:#00ff88;}
+
+/* DASHBOARD PANEL */
+.dashboard-panel{flex:1;overflow:hidden;display:flex;flex-direction:column;background:#0a0a0f;}
+.dash-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#333350;text-align:center;padding:32px;}
+.dash-empty-icon{font-size:48px;margin-bottom:16px;opacity:0.3;}
+.dash-empty h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;color:#444;}
+.dash-empty p{font-size:12px;line-height:1.7;max-width:300px;}
+.dash-header{padding:16px 20px;border-bottom:1px solid #222230;flex-shrink:0;}
+.dash-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#f0f0ff;}
+.dash-tagline{font-size:12px;color:#666680;margin-top:2px;}
+.dash-powered{display:inline-block;background:#00ff88;color:#000;font-size:9px;font-weight:800;letter-spacing:2px;padding:2px 8px;text-transform:uppercase;margin-top:8px;}
+.dash-tabs{display:flex;overflow-x:auto;border-bottom:1px solid #222230;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.dash-tabs::-webkit-scrollbar{display:none;}
+.dash-tab{flex-shrink:0;padding:10px 18px;font-size:12px;font-weight:600;color:#666680;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Inter',sans-serif;}
+.dash-tab.active{color:#00ff88;border-bottom-color:#00ff88;}
+.dash-tab:hover{color:#f0f0ff;}
+.dash-tab-add{flex-shrink:0;padding:10px 16px;font-size:18px;color:#333350;cursor:pointer;background:none;border:none;transition:color 0.2s;}
+.dash-tab-add:hover{color:#00ff88;}
+.dash-content{flex:1;overflow-y:auto;padding:20px;}
+.dash-content::-webkit-scrollbar{width:4px;}
+.dash-content::-webkit-scrollbar-thumb{background:#222230;}
+
+/* WIDGETS */
+.widget{background:#111118;border:1px solid #222230;padding:16px;margin-bottom:14px;}
+.widget-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#f0f0ff;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.widget-title span{font-size:11px;color:#666680;font-family:'Inter',sans-serif;font-weight:400;}
+
+/* LIST WIDGET */
+.list-add{display:flex;gap:8px;margin-bottom:10px;}
+.list-input{flex:1;background:#0d0d15;border:1px solid #222230;color:#f0f0ff;font-family:'Inter',sans-serif;font-size:12px;padding:8px 10px;outline:none;border-radius:0;}
+.list-input:focus{border-color:#00ff88;}
+.list-add-btn{background:#00ff88;color:#000;border:none;font-size:16px;width:34px;cursor:pointer;font-weight:800;flex-shrink:0;}
+.list-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1a1a28;}
+.list-item:last-child{border-bottom:none;}
+.list-check{width:18px;height:18px;border:2px solid #222230;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.list-check.done{background:#00ff88;border-color:#00ff88;}
+.list-check.done::after{content:'✓';font-size:11px;color:#000;font-weight:800;}
+.list-text{flex:1;font-size:12px;color:#ccc;line-height:1.5;}
+.list-text.done{text-decoration:line-through;color:#444;}
+.list-del{background:none;border:none;color:#333350;cursor:pointer;font-size:14px;padding:2px 6px;transition:color 0.2s;}
+.list-del:hover{color:#ff4444;}
+
+/* COUNTER WIDGET */
+.counter-display{display:flex;align-items:center;justify-content:center;gap:20px;padding:12px 0;}
+.counter-val{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:#00ff88;}
+.counter-btn{background:#0d0d15;border:1px solid #222230;color:#f0f0ff;font-size:22px;width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.counter-btn:hover{border-color:#00ff88;color:#00ff88;}
+.counter-label{text-align:center;font-size:11px;color:#666680;margin-top:4px;}
+
+/* PROGRESS WIDGET */
+.progress-bar-wrap{background:#0d0d15;height:12px;margin:8px 0;position:relative;}
+.progress-bar-fill{height:100%;background:#00ff88;transition:width 0.4s;}
+.progress-pct{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#00ff88;margin-bottom:4px;}
+.progress-label{font-size:11px;color:#666680;}
+
+/* NOTES WIDGET */
+.notes-area{width:100%;background:#0d0d15;border:1px solid #222230;color:#f0f0ff;font-family:'Inter',sans-serif;font-size:12px;padding:10px;outline:none;resize:vertical;min-height:100px;border-radius:0;line-height:1.7;}
+.notes-area:focus{border-color:#00ff88;}
+
+/* KANBAN WIDGET */
+.kanban-cols{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;}
+.kanban-col{flex:1;min-width:130px;background:#0d0d15;padding:10px;}
+.kanban-col-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666680;margin-bottom:8px;}
+.kanban-card{background:#111118;border:1px solid #222230;padding:8px 10px;margin-bottom:6px;font-size:11px;color:#ccc;cursor:pointer;transition:border-color 0.2s;border-left:2px solid #00ff88;}
+.kanban-card:hover{border-color:#00ff88;}
+.kanban-add{width:100%;background:transparent;border:1px dashed #222230;color:#444;font-size:11px;padding:6px;cursor:pointer;margin-top:4px;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.kanban-add:hover{border-color:#00ff88;color:#00ff88;}
+
+/* PROMPT WIDGET */
+.prompt-block{background:#0d0d15;border-left:3px solid #a855f7;padding:12px;margin-bottom:10px;}
+.prompt-label{font-size:9px;letter-spacing:2px;color:#a855f7;text-transform:uppercase;margin-bottom:6px;font-weight:700;}
+.prompt-text{font-size:11px;color:#aaa;line-height:1.7;font-family:'Inter',monospace;}
+.prompt-run{background:#a855f7;color:#fff;border:none;font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer;margin-top:8px;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;}
+.prompt-run:hover{opacity:0.85;}
+
+/* MOBILE */
+@media(max-width:600px){
+  .chat-panel{width:100%;position:fixed;bottom:0;left:0;right:0;z-index:100;height:60vh;border-right:none;border-top:1px solid #222230;transform:translateY(100%);transition:transform 0.3s;}
+  .chat-panel.open{transform:translateY(0);}
+  .dashboard-panel{height:100vh;}
+  .chat-fab{display:flex !important;}
+}
+.chat-fab{display:none;position:fixed;bottom:20px;right:20px;width:52px;height:52px;background:#00ff88;color:#000;border:none;border-radius:50%;font-size:22px;cursor:pointer;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 20px rgba(0,255,136,0.3);}
+
+/* APPROVAL PREVIEW CARD */
+.approve-card{align-self:stretch;background:#0d0d15;border:1px solid #00ff88;border-left:3px solid #00ff88;padding:14px;border-radius:4px;}
+.approve-card .ac-label{font-size:9px;letter-spacing:2px;color:#00ff88;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.approve-card .ac-summary{font-size:12px;color:#ccc;line-height:1.7;margin-bottom:6px;}
+.approve-card .ac-summary b{color:#f0f0ff;}
+.approve-card ul{list-style:none;margin:4px 0 10px;padding:0;}
+.approve-card li{font-size:11px;color:#999;padding:3px 0 3px 14px;position:relative;}
+.approve-card li::before{content:'›';position:absolute;left:0;color:#00ff88;}
+.approve-actions{display:flex;gap:8px;}
+.approve-yes{flex:1;background:#00ff88;color:#000;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:800;padding:10px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:opacity 0.2s;}
+.approve-yes:hover{opacity:0.85;}
+.approve-no{background:transparent;border:1px solid #333350;color:#888;font-size:12px;font-weight:600;padding:10px 16px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all 0.2s;}
+.approve-no:hover{border-color:#ff4444;color:#ff4444;}
+.approve-card.resolved{border-color:#222230;border-left-color:#222230;opacity:0.55;}
+.approve-card.resolved .approve-actions{display:none;}
+.approve-verdict{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+.approve-verdict.ok{color:#00ff88;}
+.approve-verdict.no{color:#ff4444;}
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div id="setup">
+  <div class="setup-logo">Run AI Free and Offline</div>
+  <h1 class="setup-title">AI Dashboard<br><span>Builder</span></h1>
+  <p class="setup-sub">Talk to the AI. Tell it what you need. It builds your custom dashboard live — no coding, no downloads, free forever.</p>
+
+  <div class="setup-card">
+    <label>Your Free Groq API Key</label>
+    <input type="password" id="api-key" placeholder="gsk_..." onblur="checkKey()"/>
+    <div class="key-status" id="key-status"></div>
+  </div>
+
+  <button class="setup-btn" id="start-btn" onclick="startBuilder()">START BUILDING →</button>
+
+  <p class="setup-note">
+    Get your free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com</a> — takes 2 minutes.<br>
+    Your key stays in your browser. Never sent anywhere except Groq.
+  </p>
+</div>
+
+<!-- BUILDER SCREEN -->
+<div id="builder">
+  <div class="topbar">
+    <div class="topbar-brand">AI Dashboard Builder</div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" onclick="exportDashboard()">Export HTML</button>
+      <button class="topbar-btn" onclick="clearDashboard()">New Dashboard</button>
+      <button class="topbar-btn danger" onclick="resetAll()">Change Key</button>
+    </div>
+  </div>
+
+  <div class="builder-body">
+    <!-- CHAT -->
+    <div class="chat-panel" id="chat-panel">
+      <div class="chat-header">
+        <div class="chat-dot"></div>
+        <div class="chat-title">AI Builder</div>
+        <div class="chat-sub" id="chat-sub">Ready</div>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-input-area">
+        <div class="quick-prompts" id="quick-prompts">
+          <button class="qp-btn" onclick="sendQuick('Add a task list')">+ Task List</button>
+          <button class="qp-btn" onclick="sendQuick('Add a notes section')">+ Notes</button>
+          <button class="qp-btn" onclick="sendQuick('Add a progress tracker')">+ Progress</button>
+          <button class="qp-btn" onclick="sendQuick('Add a new tab')">+ Tab</button>
+          <button class="qp-btn" onclick="sendQuick('Add a kanban board')">+ Kanban</button>
+          <button class="qp-btn" onclick="sendQuick('Add a counter')">+ Counter</button>
+        </div>
+        <div class="chat-input-row">
+          <button class="mic-btn" id="mic-btn" onclick="toggleMic()" title="Voice input">🎤</button>
+          <textarea class="chat-input" id="chat-input" placeholder="Describe what you want to build..." rows="1" onkeydown="handleKey(event)"></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard-panel" id="dashboard-panel">
+      <div class="dash-empty" id="dash-empty">
+        <div class="dash-empty-icon">💬</div>
+        <h3>Start talking to build</h3>
+        <p>Tell the AI what kind of dashboard you need. It will build it here live as you chat.</p>
+      </div>
+      <div id="dash-shell" style="display:none;flex-direction:column;height:100%;">
+        <div class="dash-header" id="dash-header">
+          <div class="dash-name" id="dash-name">My Dashboard</div>
+          <div class="dash-tagline" id="dash-tagline"></div>
+          <span class="dash-powered">Powered by Groq · Free AI</span>
+        </div>
+        <div class="dash-tabs" id="dash-tabs"></div>
+        <div class="dash-content" id="dash-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile chat FAB -->
+<button class="chat-fab" id="chat-fab" onclick="toggleMobileChat()">💬</button>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────
+// Groq (OpenAI-compatible). Model lives in ONE place. Both are current production models.
+// llama-3.3-70b-versatile = stronger, better for building dashboards. Swap to 'llama-3.1-8b-instant' for max speed.
+const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+let apiKey = '';
+let chatHistory = [];
+let dashboard = { name:'', tagline:'', tabs:[], activeTab:0 };
+let recognition = null;
+let isListening = false;
+const synth = window.speechSynthesis;
+
+const SYSTEM_PROMPT = `You are an AI dashboard builder. The user will tell you what they want to build and you will respond with JSON instructions to build or update their dashboard.
+
+ALWAYS respond with valid JSON in this exact format:
+{
+  "message": "friendly message to the user",
+  "action": "create_dashboard | add_tab | add_widget | update_dashboard | chat",
+  "data": {}
+}
+
+Actions and their data shapes:
+
+create_dashboard:
+{ "name": "Dashboard Name", "tagline": "short tagline", "tabs": [{"title":"Tab Name","widgets":[]}] }
+
+add_tab:
+{ "title": "Tab Name", "widgets": [] }
+
+add_widget (always include tab_index):
+{ "tab_index": 0, "widget": { "type": "list|counter|progress|notes|kanban|prompts", "title": "Widget Title", "items": [], "value": 0, "max": 100, "content": "", "columns": [], "prompts": [] } }
+
+update_dashboard:
+{ "name": "new name", "tagline": "new tagline" }
+
+chat (just talking, no dashboard change):
+{}
+
+Widget types:
+- list: has items array of strings, supports add/check/delete
+- counter: has value (number) and label (string)  
+- progress: has value (0-100), label, and items array for checklist
+- notes: has content string
+- kanban: has columns array [{title, cards:[]}]
+- prompts: has prompts array [{label, text}] for embedded AI prompts
+
+Keep messages friendly and short. Ask clarifying questions one at a time. Build incrementally. Never output HTML or code — only JSON.`;
+
+// ─── SETUP ───────────────────────────────────────────────────────
+async function checkKey() {
+  const key = document.getElementById('api-key').value.trim();
+  const status = document.getElementById('key-status');
+  if (!key) { status.textContent = ''; return; }
+  if (!key.startsWith('gsk_')) {
+    status.style.color = '#ff8888';
+    status.textContent = 'Groq keys start with gsk_';
+    return;
+  }
+  status.style.color = '#666680';
+  status.textContent = 'Checking...';
+  try {
+    const res = await fetch(GROQ_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: GROQ_MODEL, messages: [{ role: 'user', content: 'hi' }], max_tokens: 5 })
+    });
+    if (res.ok) {
+      status.style.color = '#00ff88';
+      status.textContent = '✓ Key valid and ready';
+    } else if (res.status === 429) {
+      status.style.color = '#ffaa00';
+      status.textContent = '⚠ Key valid but rate limited — wait 30s';
+    } else {
+      status.style.color = '#ff8888';
+      status.textContent = '✗ Invalid key — get one free at console.groq.com';
+    }
+  } catch(e) {
+    status.style.color = '#ffaa00';
+    status.textContent = 'Could not verify — check connection';
+  }
+}
+
+function enterBuilder() {
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('builder').style.display = 'flex';
+}
+
+function startBuilder() {
+  const key = document.getElementById('api-key').value.trim();
+  if (!key) { alert('Paste your free Groq key first.'); return; }
+  if (!key.startsWith('gsk_')) { alert('That does not look like a Groq key. Keys start with gsk_.'); return; }
+  apiKey = key;
+  localStorage.setItem('dashboard_api_key', key);
+  enterBuilder();
+  loadDashboard();
+  if (!dashboard.tabs.length) {
+    addMessage('ai', "Hi! I'm your AI dashboard builder. Tell me what you want to build — a family chore tracker, business dashboard, fitness tracker, project board, anything. I'll show you a preview and you approve it before it's built. What do you need?");
+  }
+}
+
+function resetAll() {
+  apiKey = '';
+  localStorage.removeItem('dashboard_api_key');
+  location.reload();
+}
+
+// Auto-skip setup if a key was already saved — type it once, ever.
+window.onload = function() {
+  const saved = localStorage.getItem('dashboard_api_key');
+  if (saved) {
+    document.getElementById('api-key').value = saved;
+    apiKey = saved;
+    enterBuilder();
+    loadDashboard();
+    if (!dashboard.tabs.length) {
+      addMessage('ai', "Welcome back! Tell me what to build or change. I'll preview it and you approve before it's applied.");
+    }
+  }
+};
+
+// ─── CHAT ────────────────────────────────────────────────────────
+function addMessage(role, text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  const t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !apiKey) return;
+  input.value = '';
+  input.style.height = 'auto';
+  addMessage('user', text);
+  await callAI(text);
+}
+
+function sendQuick(text) {
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+}
+
+async function callAI(userText) {
+  document.getElementById('send-btn').disabled = true;
+  document.getElementById('chat-sub').textContent = 'Thinking...';
+  showTyping();
+
+  chatHistory.push({ role: 'user', content: userText });
+
+  // Build context about current dashboard state
+  const dashContext = dashboard.tabs.length > 0
+    ? '\n\nCurrent dashboard state: ' + JSON.stringify({ name: dashboard.name, tabs: dashboard.tabs.map(t => ({ title: t.title, widgets: t.widgets.map(w => ({ type: w.type, title: w.title })) })) })
+    : '\n\nNo dashboard built yet.';
+
+  const messages = [
+    { role: 'system', content: SYSTEM_PROMPT + dashContext },
+    ...chatHistory
+  ];
+
+  try {
+    const res = await fetch(GROQ_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages,
+        max_tokens: 2048,
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      hideTyping();
+      addMessage('ai', 'Error: ' + (data.error?.message || 'Check your API key'));
+      return;
+    }
+    const raw = data.choices?.[0]?.message?.content || '';
+    chatHistory.push({ role: 'assistant', content: raw });
+    hideTyping();
+    processAIResponse(raw);
+  } catch(e) {
+    hideTyping();
+    addMessage('ai', 'Network error. Check your connection.');
+  } finally {
+    document.getElementById('send-btn').disabled = false;
+    document.getElementById('chat-sub').textContent = 'Ready';
+  }
+}
+
+function processAIResponse(raw) {
+  let parsed;
+  try {
+    // Pull the JSON object out even if the model wrapped it in prose or code fences.
+    let clean = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const first = clean.indexOf('{'), last = clean.lastIndexOf('}');
+    if (first !== -1 && last !== -1) clean = clean.slice(first, last + 1);
+    parsed = JSON.parse(clean);
+  } catch(e) {
+    addMessage('ai', raw || "Hmm, I didn't catch that — say it again?");
+    return;
+  }
+
+  // Build immediately. No approval, no extra taps.
+  switch(parsed.action) {
+    case 'create_dashboard': createDashboard(parsed.data || {}); break;
+    case 'add_tab': addTab(parsed.data || {}); break;
+    case 'add_widget': addWidget(parsed.data || {}); break;
+    case 'update_dashboard': updateDashboardInfo(parsed.data || {}); break;
+  }
+
+  // Speak/show the reply after building.
+  if (parsed.message) { addMessage('ai', parsed.message); speak(parsed.message); }
+}
+
+
+// ─── DASHBOARD RENDERER ──────────────────────────────────────────
+function showDashShell() {
+  document.getElementById('dash-empty').style.display = 'none';
+  document.getElementById('dash-shell').style.display = 'flex';
+}
+
+function createDashboard(data) {
+  dashboard = { name: data.name || 'My Dashboard', tagline: data.tagline || '', tabs: [], activeTab: 0 };
+  if (data.tabs) data.tabs.forEach(t => dashboard.tabs.push({ title: t.title, widgets: t.widgets || [] }));
+  document.getElementById('dash-name').textContent = dashboard.name;
+  document.getElementById('dash-tagline').textContent = dashboard.tagline;
+  showDashShell();
+  renderTabs();
+  renderActiveTab();
+  saveDashboard();
+}
+
+function addTab(data) {
+  if (!dashboard.tabs.length) showDashShell();
+  dashboard.tabs.push({ title: data.title || 'New Tab', widgets: data.widgets || [] });
+  dashboard.activeTab = dashboard.tabs.length - 1;
+  renderTabs();
+  renderActiveTab();
+  saveDashboard();
+}
+
+function addWidget(data) {
+  const idx = data.tab_index !== undefined ? data.tab_index : dashboard.activeTab;
+  if (!dashboard.tabs[idx]) return;
+  const w = data.widget || {};
+  if (!w.id) w.id = 'w_' + Date.now();
+  dashboard.tabs[idx].widgets.push(w);
+  if (dashboard.activeTab === idx) renderActiveTab();
+  saveDashboard();
+}
+
+function updateDashboardInfo(data) {
+  if (data.name) { dashboard.name = data.name; document.getElementById('dash-name').textContent = data.name; }
+  if (data.tagline) { dashboard.tagline = data.tagline; document.getElementById('dash-tagline').textContent = data.tagline; }
+  saveDashboard();
+}
+
+function renderTabs() {
+  const tabsEl = document.getElementById('dash-tabs');
+  tabsEl.innerHTML = '';
+  dashboard.tabs.forEach((tab, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'dash-tab' + (i === dashboard.activeTab ? ' active' : '');
+    btn.textContent = tab.title;
+    btn.onclick = () => { dashboard.activeTab = i; renderTabs(); renderActiveTab(); };
+    tabsEl.appendChild(btn);
+  });
+  const addBtn = document.createElement('button');
+  addBtn.className = 'dash-tab-add';
+  addBtn.textContent = '+';
+  addBtn.title = 'Add tab';
+  addBtn.onclick = () => sendQuick('Add a new tab');
+  tabsEl.appendChild(addBtn);
+}
+
+function renderActiveTab() {
+  const content = document.getElementById('dash-content');
+  content.innerHTML = '';
+  const tab = dashboard.tabs[dashboard.activeTab];
+  if (!tab) return;
+  tab.widgets.forEach((w, wi) => renderWidget(w, wi, content));
+}
+
+function renderWidget(w, wi, container) {
+  const el = document.createElement('div');
+  el.className = 'widget';
+  el.id = 'widget_' + (w.id || wi);
+
+  switch(w.type) {
+    case 'list': el.innerHTML = renderList(w, wi); break;
+    case 'counter': el.innerHTML = renderCounter(w, wi); break;
+    case 'progress': el.innerHTML = renderProgress(w, wi); break;
+    case 'notes': el.innerHTML = renderNotes(w, wi); break;
+    case 'kanban': el.innerHTML = renderKanban(w, wi); break;
+    case 'prompts': el.innerHTML = renderPrompts(w, wi); break;
+    default: el.innerHTML = `<div class="widget-title">${w.title||'Widget'}</div><p style="font-size:12px;color:#666680;">Widget type: ${w.type}</p>`;
+  }
+  container.appendChild(el);
+}
+
+function renderList(w, wi) {
+  const items = (w.items || []).map((item, ii) => {
+    const done = item.done || false;
+    const text = typeof item === 'string' ? item : item.text;
+    return `<div class="list-item">
+      <div class="list-check ${done?'done':''}" onclick="toggleListItem(${wi},${ii})"></div>
+      <div class="list-text ${done?'done':''}">${text}</div>
+      <button class="list-del" onclick="deleteListItem(${wi},${ii})">×</button>
+    </div>`;
+  }).join('');
+  return `<div class="widget-title">${w.title||'List'} <span>${(w.items||[]).filter(i=>i.done).length}/${(w.items||[]).length} done</span></div>
+    <div class="list-add"><input class="list-input" id="li_${wi}" placeholder="Add item..." onkeydown="if(event.key==='Enter')addListItem(${wi})"/><button class="list-add-btn" onclick="addListItem(${wi})">+</button></div>
+    <div id="list_items_${wi}">${items}</div>`;
+}
+
+function addListItem(wi) {
+  const input = document.getElementById('li_' + wi);
+  const val = input.value.trim();
+  if (!val) return;
+  const tab = dashboard.tabs[dashboard.activeTab];
+  if (!tab.widgets[wi].items) tab.widgets[wi].items = [];
+  tab.widgets[wi].items.push({ text: val, done: false });
+  input.value = '';
+  renderActiveTab();
+  saveDashboard();
+}
+
+function toggleListItem(wi, ii) {
+  const item = dashboard.tabs[dashboard.activeTab].widgets[wi].items[ii];
+  if (typeof item === 'string') {
+    dashboard.tabs[dashboard.activeTab].widgets[wi].items[ii] = { text: item, done: true };
+  } else {
+    item.done = !item.done;
+  }
+  renderActiveTab();
+  saveDashboard();
+}
+
+function deleteListItem(wi, ii) {
+  dashboard.tabs[dashboard.activeTab].widgets[wi].items.splice(ii, 1);
+  renderActiveTab();
+  saveDashboard();
+}
+
+function renderCounter(w, wi) {
+  return `<div class="widget-title">${w.title||'Counter'}</div>
+    <div class="counter-display">
+      <button class="counter-btn" onclick="changeCounter(${wi},-1)">−</button>
+      <div class="counter-val" id="cv_${wi}">${w.value||0}</div>
+      <button class="counter-btn" onclick="changeCounter(${wi},1)">+</button>
+    </div>
+    <div class="counter-label">${w.label||''}</div>`;
+}
+
+function changeCounter(wi, delta) {
+  const w = dashboard.tabs[dashboard.activeTab].widgets[wi];
+  w.value = (w.value || 0) + delta;
+  document.getElementById('cv_' + wi).textContent = w.value;
+  saveDashboard();
+}
+
+function renderProgress(w, wi) {
+  const pct = Math.min(100, Math.max(0, w.value || 0));
+  const items = (w.items || []).map((item, ii) => {
+    const done = item.done || false;
+    const text = typeof item === 'string' ? item : item.text;
+    return `<div class="list-item">
+      <div class="list-check ${done?'done':''}" onclick="toggleProgressItem(${wi},${ii})"></div>
+      <div class="list-text ${done?'done':''}">${text}</div>
+    </div>`;
+  }).join('');
+  return `<div class="widget-title">${w.title||'Progress'}</div>
+    <div class="progress-pct">${pct}%</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    <div class="progress-label">${w.label||''}</div>
+    ${items}`;
+}
+
+function toggleProgressItem(wi, ii) {
+  const w = dashboard.tabs[dashboard.activeTab].widgets[wi];
+  const item = w.items[ii];
+  if (typeof item === 'string') w.items[ii] = { text: item, done: true };
+  else item.done = !item.done;
+  const total = w.items.length;
+  const done = w.items.filter(i => i.done).length;
+  w.value = total > 0 ? Math.round((done / total) * 100) : 0;
+  renderActiveTab();
+  saveDashboard();
+}
+
+function renderNotes(w, wi) {
+  return `<div class="widget-title">${w.title||'Notes'}</div>
+    <textarea class="notes-area" onchange="saveNotes(${wi},this.value)" placeholder="Start typing...">${w.content||''}</textarea>`;
+}
+
+function saveNotes(wi, val) {
+  dashboard.tabs[dashboard.activeTab].widgets[wi].content = val;
+  saveDashboard();
+}
+
+function renderKanban(w, wi) {
+  const cols = (w.columns || [{ title:'To Do', cards:[] }, { title:'In Progress', cards:[] }, { title:'Done', cards:[] }]);
+  const colsHtml = cols.map((col, ci) => {
+    const cards = (col.cards || []).map((card, ki) => `<div class="kanban-card" onclick="moveCard(${wi},${ci},${ki})">${card}</div>`).join('');
+    return `<div class="kanban-col"><div class="kanban-col-title">${col.title}</div>${cards}<button class="kanban-add" onclick="addKanbanCard(${wi},${ci})">+ Add card</button></div>`;
+  }).join('');
+  return `<div class="widget-title">${w.title||'Board'}</div><div class="kanban-cols">${colsHtml}</div>`;
+}
+
+function addKanbanCard(wi, ci) {
+  const text = prompt('Card title:');
+  if (!text) return;
+  const w = dashboard.tabs[dashboard.activeTab].widgets[wi];
+  if (!w.columns[ci].cards) w.columns[ci].cards = [];
+  w.columns[ci].cards.push(text);
+  renderActiveTab();
+  saveDashboard();
+}
+
+function moveCard(wi, ci, ki) {
+  const w = dashboard.tabs[dashboard.activeTab].widgets[wi];
+  const nextCol = (ci + 1) % w.columns.length;
+  const card = w.columns[ci].cards.splice(ki, 1)[0];
+  if (!w.columns[nextCol].cards) w.columns[nextCol].cards = [];
+  w.columns[nextCol].cards.push(card);
+  renderActiveTab();
+  saveDashboard();
+}
+
+function renderPrompts(w, wi) {
+  const prompts = (w.prompts || []).map((p, pi) =>
+    `<div class="prompt-block">
+      <div class="prompt-label">${p.label||'Prompt '+(pi+1)}</div>
+      <div class="prompt-text">${p.text||''}</div>
+      <button class="prompt-run" onclick="runEmbeddedPrompt('${(p.text||'').replace(/'/g,"\\'")}')">Run in Chat</button>
+    </div>`
+  ).join('');
+  return `<div class="widget-title">${w.title||'AI Prompts'}</div>${prompts}`;
+}
+
+function runEmbeddedPrompt(text) {
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+}
+
+// ─── PERSIST ─────────────────────────────────────────────────────
+function saveDashboard() {
+  localStorage.setItem('current_dashboard', JSON.stringify(dashboard));
+}
+
+function loadDashboard() {
+  const saved = localStorage.getItem('current_dashboard');
+  if (!saved) return;
+  try {
+    dashboard = JSON.parse(saved);
+    if (dashboard.tabs.length) {
+      document.getElementById('dash-name').textContent = dashboard.name;
+      document.getElementById('dash-tagline').textContent = dashboard.tagline;
+      showDashShell();
+      renderTabs();
+      renderActiveTab();
+    }
+  } catch(e) {}
+}
+
+// ─── EXPORT ──────────────────────────────────────────────────────
+function exportDashboard() {
+  if (!dashboard.tabs.length) { alert('Build something first.'); return; }
+  const html = generateExportHTML();
+  const a = document.createElement('a');
+  a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+  a.download = (dashboard.name || 'dashboard').toLowerCase().replace(/\s+/g,'-') + '.html';
+  a.click();
+}
+
+function generateExportHTML() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${dashboard.name}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0f;color:#f0f0ff;font-family:system-ui,sans-serif;min-height:100vh;}
+.header{background:#111118;border-bottom:3px solid #00ff88;padding:20px;text-align:center;}
+.header h1{font-size:24px;font-weight:900;color:#00ff88;}
+.header p{font-size:12px;color:#888;margin-top:4px;}
+.powered{display:inline-block;background:#00ff88;color:#000;font-size:9px;font-weight:800;letter-spacing:2px;padding:2px 8px;text-transform:uppercase;margin-top:8px;}
+.tabs{display:flex;overflow-x:auto;background:#111118;border-bottom:1px solid #222230;}
+.tab{flex-shrink:0;padding:12px 18px;font-size:12px;font-weight:700;color:#666;cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;}
+.tab.active{color:#00ff88;border-bottom-color:#00ff88;}
+.panel{display:none;padding:20px;max-width:800px;margin:0 auto;}
+.panel.active{display:block;}
+.widget{background:#111118;border:1px solid #222230;padding:16px;margin-bottom:14px;}
+.wt{font-size:14px;font-weight:900;margin-bottom:12px;color:#f0f0ff;}
+.list-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1a1a28;}
+.chk{width:18px;height:18px;border:2px solid #333;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chk.done{background:#00ff88;border-color:#00ff88;}
+.li-text{font-size:12px;color:#ccc;flex:1;}
+.li-text.done{text-decoration:line-through;color:#444;}
+.add-row{display:flex;gap:8px;margin-bottom:10px;}
+.add-input{flex:1;background:#0d0d15;border:1px solid #222230;color:#f0f0ff;font-size:12px;padding:8px;outline:none;}
+.add-btn{background:#00ff88;color:#000;border:none;font-size:16px;width:34px;cursor:pointer;font-weight:900;}
+.ctr{display:flex;align-items:center;justify-content:center;gap:20px;padding:12px 0;}
+.ctrv{font-size:48px;font-weight:900;color:#00ff88;}
+.ctr-btn{background:#0d0d15;border:1px solid #222;color:#fff;font-size:22px;width:44px;height:44px;cursor:pointer;}
+.prog-bar{background:#0d0d15;height:12px;margin:8px 0;}
+.prog-fill{height:100%;background:#00ff88;transition:width 0.3s;}
+.prog-pct{font-size:24px;font-weight:900;color:#00ff88;}
+.notes-ta{width:100%;background:#0d0d15;border:1px solid #222;color:#fff;font-size:12px;padding:10px;resize:vertical;min-height:100px;outline:none;}
+.kanban{display:flex;gap:10px;overflow-x:auto;}
+.kcol{flex:1;min-width:130px;background:#0d0d15;padding:10px;}
+.kcol-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:8px;}
+.kcard{background:#111;border:1px solid #222;border-left:2px solid #00ff88;padding:8px;margin-bottom:6px;font-size:11px;color:#ccc;cursor:pointer;}
+.kadd{width:100%;background:transparent;border:1px dashed #222;color:#444;font-size:11px;padding:6px;cursor:pointer;margin-top:4px;}
+.pb{background:#0d0d15;border-left:3px solid #a855f7;padding:12px;margin-bottom:10px;}
+.pb-label{font-size:9px;letter-spacing:2px;color:#a855f7;text-transform:uppercase;margin-bottom:6px;font-weight:700;}
+.pb-text{font-size:11px;color:#aaa;line-height:1.7;}
+/* CHAT */
+.chat-fab{position:fixed;bottom:20px;right:20px;width:52px;height:52px;background:#00ff88;color:#000;border:none;border-radius:50%;font-size:22px;cursor:pointer;z-index:99;box-shadow:0 4px 20px rgba(0,255,136,0.3);}
+.chat-panel{display:none;position:fixed;bottom:80px;right:20px;width:320px;height:440px;background:#111118;border:1px solid #222230;flex-direction:column;z-index:100;box-shadow:0 8px 40px rgba(0,0,0,0.5);}
+.chat-panel.open{display:flex;}
+.chat-hdr{padding:12px 16px;border-bottom:1px solid #222230;display:flex;justify-content:space-between;align-items:center;}
+.chat-hdr-title{font-size:13px;font-weight:800;color:#00ff88;}
+.chat-close{background:none;border:none;color:#666;cursor:pointer;font-size:18px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.cmsg{padding:8px 12px;border-radius:4px;font-size:12px;line-height:1.6;max-width:90%;}
+.cmsg.ai{background:#1a1a2e;border-left:2px solid #00ff88;align-self:flex-start;}
+.cmsg.user{background:#1a3a2a;align-self:flex-end;}
+.chat-input-wrap{padding:10px;border-top:1px solid #222230;display:flex;gap:6px;}
+.chat-in{flex:1;background:#0d0d15;border:1px solid #222230;color:#fff;font-size:12px;padding:8px;outline:none;}
+.chat-send{background:#00ff88;color:#000;border:none;padding:8px 14px;cursor:pointer;font-weight:800;font-size:13px;}
+.settings-panel{display:none;position:fixed;bottom:80px;right:20px;width:280px;background:#111118;border:1px solid #222230;padding:16px;z-index:101;}
+.settings-panel.open{display:block;}
+.settings-label{font-size:10px;letter-spacing:2px;color:#00ff88;text-transform:uppercase;margin-bottom:8px;}
+.settings-input{width:100%;background:#0d0d15;border:1px solid #222230;color:#fff;font-size:12px;padding:8px;outline:none;margin-bottom:8px;}
+.settings-save{background:#00ff88;color:#000;border:none;font-size:12px;font-weight:800;padding:8px 16px;cursor:pointer;width:100%;text-transform:uppercase;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>${dashboard.name}</h1>
+  <p>${dashboard.tagline}</p>
+  <span class="powered">Powered by Groq · Free AI</span>
+</div>
+<div class="tabs" id="tabs">${dashboard.tabs.map((t,i)=>`<button class="tab${i===0?' active':''}" onclick="showTab(${i})">${t.title}</button>`).join('')}</div>
+${dashboard.tabs.map((t,i)=>`<div class="panel${i===0?' active':''}" id="panel_${i}">${t.widgets.map((w,wi)=>exportWidget(w,i,wi)).join('')}</div>`).join('')}
+
+<button class="chat-fab" onclick="toggleChat()" title="AI Assistant">💬</button>
+<button class="chat-fab" onclick="toggleSettings()" title="Set your AI key" style="bottom:84px;width:42px;height:42px;font-size:18px;background:#111118;color:#00ff88;border:1px solid #00ff88;">⚙</button>
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-hdr"><span class="chat-hdr-title">AI Assistant</span><button class="chat-close" onclick="toggleChat()">×</button></div>
+  <div class="chat-msgs" id="chat-msgs"><div class="cmsg ai">Hi! I am your AI assistant for this dashboard. Ask me anything or tell me what to help you with.</div></div>
+  <div class="chat-input-wrap">
+    <input class="chat-in" id="chat-in" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')dashSend()"/>
+    <button class="chat-send" onclick="dashSend()">→</button>
+  </div>
+</div>
+<div class="settings-panel" id="settings-panel">
+  <div class="settings-label">Your Free Groq API Key</div>
+  <input class="settings-input" type="password" id="settings-key" placeholder="gsk_..." value=""/>
+  <button class="settings-save" onclick="saveKey()">Save Key</button>
+  <p style="font-size:10px;color:#444;margin-top:8px;">Get free at console.groq.com/keys</p>
+</div>
+
+<script>
+const DASH_DATA = ${JSON.stringify(dashboard)};
+const GROQ_MODEL = 'llama-3.1-8b-instant';
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+let dashKey = localStorage.getItem('dash_ai_key') || '';
+let chatHistory = [];
+window.addEventListener('DOMContentLoaded', function(){
+  if (dashKey) { var f = document.getElementById('settings-key'); if (f) f.value = dashKey; }
+});
+const SYSTEM = 'You are a helpful AI assistant inside the ${dashboard.name} dashboard. Help the user manage their tasks, answer questions, and give advice related to their dashboard. Keep responses short and friendly.';
+
+function showTab(i) {
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.className='tab'+(idx===i?' active':''));
+  document.querySelectorAll('.panel').forEach((p,idx)=>p.className='panel'+(idx===i?' active':''));
+}
+
+function toggleChat() {
+  const p = document.getElementById('chat-panel');
+  const sp = document.getElementById('settings-panel');
+  sp.classList.remove('open');
+  p.classList.toggle('open');
+}
+
+function toggleSettings() {
+  const p = document.getElementById('settings-panel');
+  const cp = document.getElementById('chat-panel');
+  cp.classList.remove('open');
+  p.classList.toggle('open');
+}
+
+function saveKey() {
+  const k = document.getElementById('settings-key').value.trim();
+  if (k) { localStorage.setItem('dash_ai_key', k); dashKey = k; alert('Key saved!'); document.getElementById('settings-panel').classList.remove('open'); }
+}
+
+function addChatMsg(role, text) {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'cmsg ' + role;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function dashSend() {
+  const input = document.getElementById('chat-in');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  if (!dashKey) {
+    addChatMsg('ai', 'First time? Tap the ⚙ button (just above) and paste your free Groq key once — it stays private in your browser and you will not be asked again.');
+    document.getElementById('settings-panel').classList.add('open');
+    document.getElementById('chat-panel').classList.remove('open');
+    return;
+  }
+  addChatMsg('user', text);
+  chatHistory.push({ role: 'user', content: text });
+  const messages = [{ role:'system', content:SYSTEM }, ...chatHistory];
+  try {
+    const res = await fetch(GROQ_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + dashKey },
+      body: JSON.stringify({ model: GROQ_MODEL, messages, max_tokens: 500, temperature: 0.7 })
+    });
+    const data = await res.json();
+    if (!res.ok) { addChatMsg('ai', 'Error: ' + (data.error?.message || 'Check your key')); return; }
+    const reply = data.choices?.[0]?.message?.content || '';
+    chatHistory.push({ role: 'assistant', content: reply });
+    addChatMsg('ai', reply);
+  } catch(e) { addChatMsg('ai', 'Network error.'); }
+}
+
+// Widget interactions
+function toggleCheck(tabI, wi, ii) {
+  // stored in localStorage per dashboard
+  const key = 'dash_checks';
+  const stored = JSON.parse(localStorage.getItem(key) || '{}');
+  const k = tabI+'_'+wi+'_'+ii;
+  stored[k] = !stored[k];
+  localStorage.setItem(key, JSON.stringify(stored));
+  const chk = document.getElementById('chk_'+tabI+'_'+wi+'_'+ii);
+  const txt = document.getElementById('txt_'+tabI+'_'+wi+'_'+ii);
+  if (stored[k]) { chk.className='chk done'; chk.textContent='✓'; if(txt)txt.className='li-text done'; }
+  else { chk.className='chk'; chk.textContent=''; if(txt)txt.className='li-text'; }
+}
+function addItem(tabI, wi) {
+  const input = document.getElementById('addinput_'+tabI+'_'+wi);
+  const val = input.value.trim();
+  if (!val) return;
+  const list = document.getElementById('list_'+tabI+'_'+wi);
+  const ii = list.children.length;
+  const div = document.createElement('div');
+  div.className = 'list-item';
+  div.innerHTML = '<div class="chk" id="chk_'+tabI+'_'+wi+'_'+ii+'" onclick="toggleCheck('+tabI+','+wi+','+ii+')"></div><div class="li-text" id="txt_'+tabI+'_'+wi+'_'+ii+'">'+val+'</div>';
+  list.appendChild(div);
+  input.value = '';
+}
+function changeCounter(id, delta) {
+  const el = document.getElementById(id);
+  el.textContent = parseInt(el.textContent) + delta;
+}
+<\/script>
+</body>
+</html>`;
+}
+
+function exportWidget(w, tabI, wi) {
+  switch(w.type) {
+    case 'list':
+      const items = (w.items||[]).map((item,ii)=>{
+        const text = typeof item==='string'?item:item.text;
+        return `<div class="list-item"><div class="chk" id="chk_${tabI}_${wi}_${ii}" onclick="toggleCheck(${tabI},${wi},${ii})"></div><div class="li-text" id="txt_${tabI}_${wi}_${ii}">${text}</div></div>`;
+      }).join('');
+      return `<div class="widget"><div class="wt">${w.title||'List'}</div><div class="add-row"><input class="add-input" id="addinput_${tabI}_${wi}" placeholder="Add item..." onkeydown="if(event.key==='Enter')addItem(${tabI},${wi})"/><button class="add-btn" onclick="addItem(${tabI},${wi})">+</button></div><div id="list_${tabI}_${wi}">${items}</div></div>`;
+    case 'counter':
+      return `<div class="widget"><div class="wt">${w.title||'Counter'}</div><div class="ctr"><button class="ctr-btn" onclick="changeCounter('ctrv_${tabI}_${wi}',-1)">−</button><div class="ctrv" id="ctrv_${tabI}_${wi}">${w.value||0}</div><button class="ctr-btn" onclick="changeCounter('ctrv_${tabI}_${wi}',1)">+</button></div></div>`;
+    case 'notes':
+      return `<div class="widget"><div class="wt">${w.title||'Notes'}</div><textarea class="notes-ta" placeholder="Start typing...">${w.content||''}</textarea></div>`;
+    case 'progress':
+      const pct = w.value||0;
+      return `<div class="widget"><div class="wt">${w.title||'Progress'}</div><div class="prog-pct">${pct}%</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div></div>`;
+    case 'kanban':
+      const cols = (w.columns||[{title:'To Do',cards:[]},{title:'In Progress',cards:[]},{title:'Done',cards:[]}]);
+      return `<div class="widget"><div class="wt">${w.title||'Board'}</div><div class="kanban">${cols.map((c,ci)=>`<div class="kcol"><div class="kcol-title">${c.title}</div>${(c.cards||[]).map(card=>`<div class="kcard">${card}</div>`).join('')}<button class="kadd" onclick="alert('Add card: '+prompt('Card title:'))">+ Add</button></div>`).join('')}</div></div>`;
+    case 'prompts':
+      return `<div class="widget"><div class="wt">${w.title||'AI Prompts'}</div>${(w.prompts||[]).map(p=>`<div class="pb"><div class="pb-label">${p.label||'Prompt'}</div><div class="pb-text">${p.text||''}</div></div>`).join('')}</div>`;
+    default:
+      return `<div class="widget"><div class="wt">${w.title||w.type}</div></div>`;
+  }
+}
+
+// ─── CLEAR / RESET ───────────────────────────────────────────────
+function clearDashboard() {
+  if (!confirm('Start a new dashboard? Current one will be cleared.')) return;
+  dashboard = { name:'', tagline:'', tabs:[], activeTab:0 };
+  chatHistory = [];
+  localStorage.removeItem('current_dashboard');
+  document.getElementById('dash-empty').style.display = 'flex';
+  document.getElementById('dash-shell').style.display = 'none';
+  document.getElementById('chat-messages').innerHTML = '';
+  addMessage('ai', "Starting fresh! What do you want to build?");
+}
+
+// ─── VOICE ───────────────────────────────────────────────────────
+function toggleMic() {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    alert('Voice not supported. Use Chrome or Edge.');
+    return;
+  }
+  if (isListening) { stopListening(); return; }
+  startListening();
+}
+
+function startListening() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+  isListening = true;
+  document.getElementById('mic-btn').classList.add('listening');
+  document.getElementById('mic-btn').textContent = '🔴';
+  recognition.onresult = function(e) {
+    const text = e.results[0][0].transcript.trim();
+    document.getElementById('chat-input').value = text;
+    stopListening();
+    sendMessage();
+  };
+  recognition.onerror = function() { stopListening(); };
+  recognition.onend = function() { stopListening(); };
+  recognition.start();
+}
+
+function stopListening() {
+  isListening = false;
+  if (recognition) { recognition.onend = null; recognition.stop(); }
+  const btn = document.getElementById('mic-btn');
+  btn.classList.remove('listening');
+  btn.textContent = '🎤';
+}
+
+// ─── SPEAK (AI replies out loud) ─────────────────────────────────
+function speak(text) {
+  if (!synth || !text) return;
+  try {
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.05; u.pitch = 1; u.lang = 'en-US';
+    synth.speak(u);
+  } catch(e) {}
+}
+
+// ─── MOBILE ──────────────────────────────────────────────────────
+function toggleMobileChat() {
+  document.getElementById('chat-panel').classList.toggle('open');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────
+// Loading is handled by window.onload (which also auto-skips setup if a key is saved).
+</script>
+</body>
+</html>
